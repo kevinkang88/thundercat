@@ -12,11 +12,11 @@ ThunderCat is a modern and lightweight **SwiftUI** weather app that provides rea
 ### **🔹 Data Handling**
 - ** Weather Updates**  
   - The app **automatically refreshes** weather data when resuming from the background, ensuring users always see the latest conditions.  
-  - Uses **UserDefaults** to persist the last searched location for a smooth experience.  
+  - Uses **UserDefaults** to persist the last searched location.  
 
 - **Optimized API Calls**  
-  - **Search Call (`search.json`)**: Fetches a list of matching locations.  
-  - **Weather Call (`current.json`)**: Fetches real-time weather for each searched location.  
+  - **Search Call /search**: Fetches a list of matching locations.  
+  - **Weather Call /current**: Fetches real-time weather for each searched location.  
 
 - **Dynamic Wind Direction Indicator**  
   - The wind direction icon rotates dynamically based on **wind degree data** from the API, accurately pointing in the direction the wind is blowing.  
