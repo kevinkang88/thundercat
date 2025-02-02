@@ -17,52 +17,42 @@ struct CurrentWeatherView: View {
         NavigationStack {
             if viewModel.isSearching {
                 if let searchedWeathers = viewModel.searchedWeather {
-                    VStack {
-                        ForEach(searchedWeathers) { weather in
-                            // cell
-                            Button {
-                                viewModel.save(weather)
-                            } label: {
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text(weather.location.name)
-                                            .font(.subheadline)
-                                            .bold()
-                                        Text("\(Int(weather.current.temp_c))°")
-                                            .font(.largeTitle)
-                                            .bold()
-                                    }
-                                    .padding(.horizontal)
-                                    Spacer()
-                                    AsyncImage(url: URL(string: "https:\(String(describing: weather.current.condition.icon))"))
-                                        .frame(width: 80, height: 80)
-                                }
-                                .background(.gray.opacity(0.2))
-                                .cornerRadius(15.0)
-                                .padding()
-                            }
+                    if searchedWeathers.isEmpty {
+                        VStack(alignment: .center) {
+                            Text("No Results Found")
+                                .font(.title)
+                                .bold()
                         }
-                        Spacer()
+                    } else {
+                        VStack {
+                            ForEach(searchedWeathers) { weather in
+                                WeatherSearchResultCell(weather: weather) {
+                                    viewModel.save(weather)
+                                }
+                            }
+                            Spacer()
+                        }
                     }
+                    
                 }
 
             } else {
-                if let selectedCity = viewModel.weather {
-                    VStack {
-                        Text(selectedCity.location.name)
-                            .font(.largeTitle)
-                            .bold()
-                        Text("\(Int(selectedCity.current.temp_c))°C - \(selectedCity.current.condition.text)")
-                            .font(.title3)
-                            .foregroundColor(.gray)
-                        AsyncImage(url: URL(string: "https:\(selectedCity.current.condition.icon)"))
-                            .frame(width: 80, height: 80)
-                    }
+                if let weather = viewModel.weather {
+                    SelectedWeatherView(
+                        weather: weather
+                    )
                     .padding()
                 } else {
-                    Text("No City Selected")
-                        .foregroundColor(.gray)
-                        .padding()
+                    VStack(alignment: .center, spacing: 15) {
+                        Text("No City Selected")
+                            .font(.title)
+                            .bold()
+                        Text("Please Search For A City")
+                            .font(.subheadline)
+                            .bold()
+                    }
+                    .padding()
+                    
                 }
             }
             
