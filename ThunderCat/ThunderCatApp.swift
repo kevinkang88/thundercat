@@ -11,7 +11,7 @@ import SwiftUI
 struct ThunderCatApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CurrentWeatherView()
         }
     }
 }
