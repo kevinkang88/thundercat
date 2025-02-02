@@ -14,16 +14,20 @@ struct SelectedWeatherView: View {
         VStack(alignment: .center, spacing: 20) {
             AsyncImage(url: URL(string: "https:\(weather.current.condition.icon)"))
                 .frame(width: 123, height: 123)
-            Text(weather.location.name)
-                .font(.title)
-                .bold()
-            Text("\(Int(weather.current.temp_f))°")
+            HStack {
+                Text(weather.location.name)
+                    .font(.title)
+                    .bold()
+                WindDirectionView(windDegree: weather.current.windDegree)
+            }
+
+            Text("\(Int(weather.current.temperature))°")
                 .font(.largeTitle)
                 .bold()
             WeatherStatsView(
                 humidity: weather.current.humidity,
-                uvIndex: weather.current.uv,
-                feelsLike: weather.current.feelslike_f
+                uvIndex: weather.current.uvIndex,
+                feelsLike: weather.current.feelsLike
             )
 
         }
@@ -56,13 +60,26 @@ struct WeatherStatCell: View {
     let value: String
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.black.opacity(0.3))
             Text(value)
-                .font(.title3)
-                .bold()
+                .font(.caption)
+                .foregroundColor(.black.opacity(0.8))
         }
+    }
+}
+
+struct WindDirectionView: View {
+    let windDegree: Int
+
+    var body: some View {
+        Image(systemName: "location.north.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 21, height: 21)
+            .rotationEffect(.degrees(Double(windDegree)))
+            .foregroundColor(.black)
     }
 }

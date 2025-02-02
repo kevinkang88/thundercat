@@ -20,15 +20,25 @@ struct WeatherResponse: Identifiable, Codable {
     }
     
     struct CurrentWeather: Codable {
-        let temp_f: Double
-        let feelslike_f: Double
+        let temperature: Double
+        let feelsLike: Double
         let humidity: Int
-        let uv: Double?
+        let uvIndex: Double?
         let condition: WeatherCondition
+        let windDegree: Int
+
+        enum CodingKeys: String, CodingKey {
+            case temperature = "temp_f"
+            case feelsLike = "feelslike_f"
+            case humidity
+            case uvIndex = "uv"
+            case condition
+            case windDegree = "wind_degree"
+        }
     }
     
     struct WeatherCondition: Codable {
-        let text: String
+        let description: String
         let icon: String
     }
 }

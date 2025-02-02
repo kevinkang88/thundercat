@@ -18,7 +18,7 @@ struct WeatherSearchResultCell: View {
                     Text(weather.location.name)
                         .font(.subheadline)
                         .bold()
-                    Text("\(Int(weather.current.temp_f))°")
+                    Text("\(Int(weather.current.temperature))°")
                         .font(.largeTitle)
                         .bold()
                 }
