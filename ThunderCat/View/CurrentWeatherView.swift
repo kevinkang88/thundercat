@@ -74,5 +74,10 @@ struct CurrentWeatherView: View {
                 viewModel.resetSearch()
             }
         }
+        .onReceive(
+            NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+        ) { _ in
+            viewModel.refreshWeather()
+        }
     }
 }

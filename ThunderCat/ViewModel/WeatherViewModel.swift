@@ -21,6 +21,7 @@ class WeatherViewModel: ObservableObject {
         self.weatherService = weatherService
         self.persistenceManager = persistenceManager
         loadSavedWeather()
+        refreshWeather()
     }
 
     func searchWeather() async {
@@ -67,6 +68,22 @@ class WeatherViewModel: ObservableObject {
     private func loadSavedWeather() {
         if let savedWeather = persistenceManager.loadWeather() {
             self.weather = savedWeather
+        }
+    }
+
+    func refreshWeather() {
+        guard let weather else { return }
+        Task {
+            do {
+                let updatedWeather = try await weatherService.fetchWeatherForLocation(
+                    lat: weather.location.lat,
+                    lon: weather.location.lon
+                )
+                self.weather = updatedWeather
+                persistenceManager.saveWeather(updatedWeather)
+            } catch {
+                print("⚠️ Failed to refresh weather: \(error.localizedDescription)")
+            }
         }
     }
 }

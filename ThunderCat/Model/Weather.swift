@@ -17,6 +17,8 @@ struct WeatherResponse: Identifiable, Codable {
         let name: String
         let region: String
         let country: String
+        let lat: Double
+        let lon: Double
     }
     
     struct CurrentWeather: Codable {
@@ -38,7 +40,6 @@ struct WeatherResponse: Identifiable, Codable {
     }
     
     struct WeatherCondition: Codable {
-        let description: String
         let icon: String
     }
 }
