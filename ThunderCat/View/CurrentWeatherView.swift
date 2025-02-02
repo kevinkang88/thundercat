@@ -16,29 +16,31 @@ struct CurrentWeatherView: View {
     var body: some View {
         NavigationStack {
             if viewModel.isSearching {
-                if let weather = viewModel.searchedWeather {
+                if let searchedWeathers = viewModel.searchedWeather {
                     VStack {
-                        // cell
-                        Button {
-                            viewModel.saveWeather()
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(weather.location.name)
-                                        .font(.subheadline)
-                                        .bold()
-                                    Text("\(Int(weather.current.temp_c))°")
-                                        .font(.largeTitle)
-                                        .bold()
+                        ForEach(searchedWeathers) { weather in
+                            // cell
+                            Button {
+                                viewModel.save(weather)
+                            } label: {
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text(weather.location.name)
+                                            .font(.subheadline)
+                                            .bold()
+                                        Text("\(Int(weather.current.temp_c))°")
+                                            .font(.largeTitle)
+                                            .bold()
+                                    }
+                                    .padding(.horizontal)
+                                    Spacer()
+                                    AsyncImage(url: URL(string: "https:\(String(describing: weather.current.condition.icon))"))
+                                        .frame(width: 80, height: 80)
                                 }
-                                .padding(.horizontal)
-                                Spacer()
-                                AsyncImage(url: URL(string: "https:\(String(describing: weather.current.condition.icon))"))
-                                    .frame(width: 80, height: 80)
+                                .background(.gray.opacity(0.2))
+                                .cornerRadius(15.0)
+                                .padding()
                             }
-                            .background(.gray.opacity(0.2))
-                            .cornerRadius(15.0)
-                            .padding()
                         }
                         Spacer()
                     }
@@ -76,7 +78,11 @@ struct CurrentWeatherView: View {
             Task {
                 await viewModel.searchWeather()
             }
-            
+        }
+        .onChange(of: viewModel.isSearching) { _, isSearching in
+            if !isSearching {
+                viewModel.resetSearch()
+            }
         }
     }
 }

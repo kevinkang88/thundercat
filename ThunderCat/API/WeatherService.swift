@@ -8,24 +8,36 @@
 import Foundation
 
 protocol WeatherFetching {
-    func fetchWeather(for query: String) async throws -> WeatherResponse
+    func searchCities(query: String) async throws -> [CitySearchResult]
+    func fetchWeatherForLocation(lat: Double, lon: Double) async throws -> WeatherResponse
 }
 
 class WeatherService: WeatherFetching {
     private let apiKey = ""
     
-    func fetchWeather(for query: String) async throws -> WeatherResponse {
-        let urlString = "https://api.weatherapi.com/v1/current.json?key=\(apiKey)&q=\(query)"
-        guard let url = URL(string: urlString) else {
-            throw URLError(.badURL)
-        }
-        
+    func fetchWeatherForLocation(lat: Double, lon: Double) async throws -> WeatherResponse {
+        let urlString = "https://api.weatherapi.com/v1/current.json?key=\(apiKey)&q=\(lat),\(lon)"
+        guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+
         let (data, response) = try await URLSession.shared.data(from: url)
-        
+
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        
+
         return try JSONDecoder().decode(WeatherResponse.self, from: data)
+    }
+
+    func searchCities(query: String) async throws -> [CitySearchResult] {
+        let urlString = "https://api.weatherapi.com/v1/search.json?key=\(apiKey)&q=\(query)"
+        guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw URLError(.badServerResponse)
+        }
+
+        return try JSONDecoder().decode([CitySearchResult].self, from: data)
     }
 }

@@ -7,9 +7,11 @@
 
 import Foundation
 
-struct WeatherResponse: Codable {
+struct WeatherResponse: Identifiable, Codable {
     let location: Location
     let current: CurrentWeather
+    
+    var id: String { "\(location.name),\(location.region)" }
     
     struct Location: Codable {
         let name: String

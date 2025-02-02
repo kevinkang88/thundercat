@@ -11,7 +11,7 @@ import SwiftUI
 class WeatherViewModel: ObservableObject {
     @Published var query: String = ""
     @Published var weather: WeatherResponse?
-    @Published var searchedWeather: WeatherResponse? // use other search endpoint and make this a list
+    @Published var searchedWeather: [WeatherResponse]?
     @Published var isSearching: Bool = false
 
     private let weatherService: WeatherFetching
@@ -27,18 +27,41 @@ class WeatherViewModel: ObservableObject {
         guard !query.isEmpty else { return }
         
         do {
-            let fetchedWeather = try await weatherService.fetchWeather(for: query)
-            searchedWeather = fetchedWeather
+            let cities = try await weatherService.searchCities(query: query)
+            searchedWeather = await fetchWeatherForCities(cities: cities)
         } catch {
             print("Error fetching weather: \(error)")
         }
     }
-    
-    func saveWeather() {
-        if let searchedWeather {
-            persistenceManager.saveWeather(searchedWeather)
-            self.weather = searchedWeather
+
+    private func fetchWeatherForCities(cities: [CitySearchResult]) async -> [WeatherResponse] {
+        return await withTaskGroup(of: WeatherResponse?.self) { group in
+            for city in cities {
+                group.addTask {
+                    return try? await self.weatherService.fetchWeatherForLocation(lat: city.lat, lon: city.lon)
+                }
+            }
+
+            var results: [WeatherResponse] = []
+            for await result in group {
+                if let result = result {
+                    results.append(result)
+                }
+            }
+            return results
         }
+    }
+
+    func save(_ weather: WeatherResponse) {
+        persistenceManager.saveWeather(weather)
+        self.weather = weather
+        isSearching = false
+        resetSearch()
+    }
+    
+    func resetSearch() {
+        searchedWeather = nil
+        query = ""
     }
 
     private func loadSavedWeather() {
