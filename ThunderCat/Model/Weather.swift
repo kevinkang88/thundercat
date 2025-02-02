@@ -20,7 +20,8 @@ struct WeatherResponse: Identifiable, Codable {
     }
     
     struct CurrentWeather: Codable {
-        let temp_c: Double
+        let temp_f: Double
+        let feelslike_f: Double
         let humidity: Int
         let uv: Double?
         let condition: WeatherCondition
